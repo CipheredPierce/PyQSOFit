@@ -806,9 +806,9 @@ class QSOFit():
 
         print(f"Testing what causes failures")
         print(f"Host: {(np.sum(np.where(datacube[3, :] < 0, True, False))) > 0.1 * datacube.shape[1]}")
-        print(f"Percentage of negative: {(np.sum(np.where(datacube[3, :] < 0, True, False))) / datacube.shape[1]} ")
+        print(f"Percentage of negative: {(np.sum(np.where(datacube[3, :] < 0))) / datacube.shape[1]} ")
         print(f"QSO: {(np.sum(np.where(datacube[4, :] < 0, True, False))) > 0.1 * datacube.shape[1]}")
-        print(f"Percentage of negative: {(np.sum(np.where(datacube[3, :] < 0, True, False))) / datacube.shape[1]} ")
+        print(f"Percentage of negative: {(np.sum(np.where(datacube[3, :] < 0))) / datacube.shape[1]} ")
         print(f"Host flux too weak: {np.median(datacube[3, :]) < 0.01 * flux_level}")
         print(f"Host-implied residual mostly negative: {np.median(host_spec) < 0}")
         if np.sum(np.where(datacube[3, :] < 0, True, False) | np.where(datacube[4, :] < 0, True, False)) > 0.1 * \
