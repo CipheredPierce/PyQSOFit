@@ -791,17 +791,24 @@ class QSOFit():
             if linear_fitter.assertion is True:
                 datacube, frac_host_4200, frac_host_5100, qso_par, gal_par = linear_fitter.auto_decomp()
             else:
+                print("linear_fitter.assertion failed, no host decomposition")
                 self.decomposed = False
                 return self.wave, self.flux, self.err
 
         print("TYPES START HERE")
-        print(f"Datacube: {datacube}, frac_host_4200: {frac_host_4200}, frac_host_5100: {frac_host_5100}, qso_par: {qso_par}, gal_par: {gal_par}")
+        print(f"Datacube: {type(datacube)}, frac_host_4200: {type(frac_host_4200)}, frac_host_5100: {type(frac_host_5100)}, qso_par: {type(qso_par)}, gal_par: {type(gal_par)}")
 
         # for some negative host template, we do not do the decomposition # not apply anymore
         # For a few cases, the host template is too weak that the host spectra (data - qso) would be mostly negative
         # through the data itself wouldn't
         flux_level = np.median(np.abs(datacube[1, :]))
         host_spec = datacube[1, :] - datacube[4, :]
+
+        print(f"Testing what causes failures")
+        print(f"Host: {(np.sum(np.where(datacube[3, :] < 0, True, False))) > 0.1}")
+        print(f"QSO: {(np.sum(np.where(datacube[4, :] < 0, True, False))) > 0.1}")
+        print(f"Host flux too weak: {np.median(datacube[3, :]) < 0.01 * flux_level}")
+        print(f"Host-implied residual mostly negative: {np.median(host_spec) < 0}")
         if np.sum(np.where(datacube[3, :] < 0, True, False) | np.where(datacube[4, :] < 0, True, False)) > 0.1 * \
                 datacube.shape[1] or np.median(datacube[3, :]) < 0.01 * flux_level or np.median(host_spec) < 0:
             self.decomposed = False
