@@ -775,6 +775,15 @@ class QSOFit():
         self.host_result_type = np.array([])
         self.host_result_name = np.array([])
 
+        # Debugging variables:
+        self.host_fail = None
+        self.host_fail_per = 0
+        self.qso_fail = None
+        self.qso_fail_per = 0
+        self.weak_host = None
+        self.residual = None
+        self.linear = None
+
         if self.host_prior is True:
             prior_fitter = Prior_decomp(self.wave, self.flux, self.err, self.npca_gal, self.npca_qso,
                                         path, host_type=self.host_type, qso_type=self.qso_type,
@@ -792,6 +801,7 @@ class QSOFit():
                 datacube, frac_host_4200, frac_host_5100, qso_par, gal_par = linear_fitter.auto_decomp()
             else:
                 print("linear_fitter.assertion failed, no host decomposition")
+                self.linear = False
                 self.decomposed = False
                 return self.wave, self.flux, self.err
 
@@ -813,6 +823,7 @@ class QSOFit():
         self.qso_fail_per = 100 * np.sum(datacube[4, :] < 0) / datacube.shape[1]
         self.weak_host = np.median(datacube[3, :]) < 0.01 * flux_level
         self.residual = np.median(host_spec) < 0
+        self.linear = True
         print(f"Host: {(np.sum(np.where(datacube[3, :] < 0, True, False))) > 0.1 * datacube.shape[1]}")
         print(f"Percentage of negative: {100 * np.sum(datacube[3, :] < 0) / datacube.shape[1]}")
         print(f"QSO: {(np.sum(np.where(datacube[4, :] < 0, True, False))) > 0.1 * datacube.shape[1]}")
