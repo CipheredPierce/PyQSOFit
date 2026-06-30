@@ -795,7 +795,7 @@ class QSOFit():
                 return self.wave, self.flux, self.err
 
         print("TYPES START HERE")
-        print(f"Datacube: {datacube}, frac_host_4200: {frac_host_4200}, frac_host_5100: {frac_host_5100}, qso_par: {qso_par}, gal_par: {gal_par}")
+        print(f"Datacube: {type(datacube)}, frac_host_4200: {type(frac_host_4200)}, frac_host_5100: {type(frac_host_5100)}, qso_par: {type(qso_par)}, gal_par: {type(gal_par)}")
 
         # for some negative host template, we do not do the decomposition # not apply anymore
         # For a few cases, the host template is too weak that the host spectra (data - qso) would be mostly negative
