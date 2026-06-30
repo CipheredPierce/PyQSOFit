@@ -804,7 +804,15 @@ class QSOFit():
         flux_level = np.median(np.abs(datacube[1, :]))
         host_spec = datacube[1, :] - datacube[4, :]
 
+
+        
         print(f"Testing what causes failures")
+        self.host_fail = (np.sum(np.where(datacube[3, :] < 0, True, False))) > 0.1 * datacube.shape[1]
+        self.host_fail_per = 100 * np.sum(datacube[3, :] < 0) / datacube.shape[1]
+        self.qso_fail = (np.sum(np.where(datacube[4, :] < 0, True, False))) > 0.1 * datacube.shape[1]
+        self.qso_fail_per = 100 * np.sum(datacube[4, :] < 0) / datacube.shape[1]
+        self.weak_host = np.median(datacube[3, :]) < 0.01 * flux_level
+        self.residual = np.median(host_spec) < 0
         print(f"Host: {(np.sum(np.where(datacube[3, :] < 0, True, False))) > 0.1 * datacube.shape[1]}")
         print(f"Percentage of negative: {100 * np.sum(datacube[3, :] < 0) / datacube.shape[1]}")
         print(f"QSO: {(np.sum(np.where(datacube[4, :] < 0, True, False))) > 0.1 * datacube.shape[1]}")
