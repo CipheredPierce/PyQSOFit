@@ -805,7 +805,7 @@ class QSOFit():
         host_spec = datacube[1, :] - datacube[4, :]
 
         print(f"Testing what causes failures")
-        print(f"Host: {(np.sum(np.where(datacube[3, :] < 0, True, False))) > 0.1 * \
+        print(f"Host Update happened: {(np.sum(np.where(datacube[3, :] < 0, True, False))) > 0.1 * \
                 datacube.shape[1]}")
         print(f"QSO: {(np.sum(np.where(datacube[4, :] < 0, True, False))) > 0.1 * \
                 datacube.shape[1]}")
