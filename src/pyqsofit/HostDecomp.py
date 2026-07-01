@@ -292,28 +292,37 @@ class Linear_decomp():
         else:
             path2host = path
 
+        # Performs PCA analysis on the QSO to determine QSO component
+        # Performs PCA? analysis to get host component
         self.qso_tmp = QSO_PCA(path2qso, n_qso, template_name=qso_type)
         self.gal_tmp = host_template(path2host, n_gal, template_type=host_type)
 
         # Get the shortest wavelength range
         wave_min = np.max([np.min(wave), np.min(self.qso_tmp.wave_qso), np.min(self.gal_tmp.wave_gal)])
         wave_max = np.min([np.max(wave), np.max(self.qso_tmp.wave_qso), np.max(self.gal_tmp.wave_gal)])
+
+        # Based on the arrays created by PCA analysis, a min/max range is created for the wave
+        # If less than half of the data is within the wavelength bounds, the decomposition fails
         ind_data = np.where((wave > wave_min) & (wave < wave_max), True, False)
         if np.sum(ind_data)/len(ind_data) < 0.5:
-            self.assertion = False
+            self.assertion = False # This is the only place that will cause the assertion to be 
             warnings.warn('The templates used for decomposition can only cover less than 50% of the original data. '
                              'Please check the settings and consider close the decomposition function.')
         else:
+            # Uses boolean masking to get the data within the wavelength range
             self.wave, self.flux, self.err = wave[ind_data], flux[ind_data], err[ind_data]
 
+            # Skipped this
             if na_mask == True:
                 self.wave_fit, self.flux_fit, self.err_fit = _na_mask(self.wave, self.flux, self.err)
             else:
                 self.wave_fit, self.flux_fit, self.err_fit = self.wave, self.flux, self.err
 
+            # The wave arrays are then interpolated so that there are no 0 values in the array (why is only the wave interpolated?)
             self.qso_datacube = self.qso_tmp.interp_data(self.wave_fit)
             self.gal_datacube = self.gal_tmp.interp_data(self.wave_fit)
 
+            # These are the number of components that were used to generate the templates
             self.n_qso = self.qso_tmp.n_template
             self.n_gal = self.gal_tmp.n_template
 
@@ -336,10 +345,14 @@ class Linear_decomp():
                 np.concatenate([np.ones(self.qso_tmp.n_template) * np.inf, np.ones(self.gal_tmp.n_template) * np.inf])
             )
 
+        # Calculating the coefficients (parameters) of the components using PCA templates chosen earlier
         self.result_params = lsq_linear(flux_temp, self.flux_fit, bounds=bounds)['x']
         qso_par = self.result_params[:self.n_qso]
         gal_par = self.result_params[self.n_qso:]
+        print(f"QSO parameters: {qso_flux}")
+        print(f"Host params: {gal_par}")
 
+        # Constructs the flux using the parameters and the unmaksed but restricted wavelength
         qso_flux = self.qso_model(qso_par, self.wave)
         gal_flux = self.gal_model(gal_par, self.wave)
 
