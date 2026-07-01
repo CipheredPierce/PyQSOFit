@@ -349,7 +349,7 @@ class Linear_decomp():
         self.result_params = lsq_linear(flux_temp, self.flux_fit, bounds=bounds)['x']
         qso_par = self.result_params[:self.n_qso]
         gal_par = self.result_params[self.n_qso:]
-        print(f"QSO parameters: {qso_flux}")
+        print(f"QSO parameters: {qso_par}")
         print(f"Host params: {gal_par}")
 
         # Constructs the flux using the parameters and the unmaksed but restricted wavelength
