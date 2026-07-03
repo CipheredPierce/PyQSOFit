@@ -817,6 +817,11 @@ class QSOFit():
 
         
         print(f"Testing what causes failures")
+        self.datacube = datacube
+        self.frac_host_4200 = frac_host_4200
+        self.frac_host_5100 = frac_host_5100
+        self.qso_par = qso_par
+        self.gal_par = gal_par
         self.host_fail = (np.sum(np.where(datacube[3, :] < 0, True, False))) > 0.1 * datacube.shape[1]
         self.host_fail_per = 100 * np.sum(datacube[3, :] < 0) / datacube.shape[1]
         self.qso_fail = (np.sum(np.where(datacube[4, :] < 0, True, False))) > 0.1 * datacube.shape[1]
